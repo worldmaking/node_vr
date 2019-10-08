@@ -2,22 +2,23 @@ const assert = require("assert")
 const openvr = require("./index.js")
 const { vec3, quat, mat4 } = require("gl-matrix")
 
-const hmdmat = mat4.create();
-const hmdpos = vec3.create();
-const hmdquat = quat.create();
+let state = {
+  hmd: { pos: vec3.create(), quat: quat.create() },
+  trackers: [
+    { pos: vec3.create(), quat: quat.create() },
+    { pos: vec3.create(), quat: quat.create() },
+  ]
+}
 
-console.log(openvr.EVRInitError[126])
+const tmpmat = mat4.create();
 
 
 try {
   openvr.init(0);
-  
 } catch(e) {
   throw openvr.EVRInitError[e];
 }
-
-
-setInterval(function() {
+function getTrackingData() {
   //openvr.update();
 
  // let res = openvr.waitGetPoses();
@@ -29,20 +30,28 @@ setInterval(function() {
     let devclass = openvr.getTrackedDeviceClass(i)
 
     if (openvr.ETrackedDeviceClass[devclass] == "TrackedDeviceClass_GenericTracker") {
-      openvr.getLastPoseForTrackedDeviceIndex(i, hmdmat)
-      mat4.getTranslation(hmdpos, hmdmat)
-      mat4.getRotation(hmdquat, hmdmat);
+      let out = state.trackers[trackerCount]
 
-      console.log("tracker", trackerCount, hmdpos, hmdquat)
+      openvr.getLastPoseForTrackedDeviceIndex(i, tmpmat)
+      mat4.getTranslation(out.pos, tmpmat)
+      mat4.getRotation(out.quat, tmpmat);
 
       trackerCount++;
+    } else if (openvr.ETrackedDeviceClass[devclass] == "TrackedDeviceClass_HMD") {
+      let out = state.hmd
+      openvr.getLastPoseForTrackedDeviceIndex(i, tmpmat)
+      mat4.getTranslation(out.pos, tmpmat)
+      mat4.getRotation(out.quat, tmpmat)
     }
 
   }
-  
- // openvr.getSortedTrackedDeviceIndicesOfClass(1)
-}, 100)
 
-console.log("openvr", openvr)
+  //console.log(state)
+  return state;
+}
+
+setInterval(getTrackingData, 100)
+
+//console.log("openvr", openvr)
 
 //console.log("event type", vr.EVREventType[1707])
