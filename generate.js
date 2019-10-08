@@ -6,6 +6,8 @@ let openvr_api = JSON.parse(fs.readFileSync(path.join(__dirname, "node_modules",
 
 let used = {}
 
+let json = {}
+
 let typedefs = {}
 let enums = {}
 let functions = {}
@@ -19,18 +21,17 @@ for (let o of openvr_api.typedefs) {
 }
 
 for (let o of openvr_api.enums) {
-  let e = []
+  let e = {}
   for (let v of o.values) {
-    let name = v.name
-    assert(!used[name], name)
-    used[name] = true;
-
-    e.push({ name:name, value:+v.value }) // { name: string, value: string }
+    e[+v.value] = v.name 
   }
   let name = o.enumname
   assert(!used[name], name)
   used[name] = true;
   enums[name] = e
+
+  let unnamespacedname = name.substr(4)
+  json[unnamespacedname] = e
 }
 
 for (let o of openvr_api.consts) {
@@ -39,7 +40,9 @@ for (let o of openvr_api.consts) {
   used[name] = true;
   // o.consttype
   // o.constval
-  //typedefs[o.typedef] = o.type
+
+  
+  json[name] = (typeof +o.constval == "number") ? +o.constval : o.constval
 }
 
 for (let o of openvr_api.structs) {
@@ -77,6 +80,7 @@ for (let o of openvr_api.methods) {
 
 }
 
+fs.writeFileSync("api.js", "module.exports = " + JSON.stringify(json, null, "  "), "utf-8")
 
 //console.log((openvr_api.methods))
 
