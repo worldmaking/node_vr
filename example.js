@@ -6,9 +6,15 @@ const hmdmat = mat4.create();
 const hmdpos = vec3.create();
 const hmdquat = quat.create();
 
+console.log(openvr.EVRInitError[126])
 
-assert( openvr.init(0) == 0);
 
+try {
+  openvr.init(0);
+  
+} catch(e) {
+  throw openvr.EVRInitError[e];
+}
 
 
 setInterval(function() {
