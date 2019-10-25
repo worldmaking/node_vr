@@ -73,7 +73,7 @@ napi_value init(napi_env env, napi_callback_info args) {
   napi_value result;
 
   int32_t apptype = EVRApplicationType_VRApplication_Scene; // vr::VRApplicaiton_Scene
-  //napi_get_value_int32(env, argv[0], &apptype);
+  napi_get_value_int32(env, argv[0], &apptype);
   
   vr::EVRApplicationType eApplicationType = (vr::EVRApplicationType)apptype;
   vr::EVRInitError peError;
