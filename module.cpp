@@ -15,7 +15,7 @@
 
 struct VRContext {
   vr::IVRSystem * m_system = nullptr;
-  vr::IVRCompositor * m_compositor = nullptr;
+  vr::IVRCompositor * m_compositor = nullptr;getLastPoseForTrackedDeviceIndex
 
   std::string m_strDriver = "No Driver";
 	std::string m_strDisplay = "No Display";
