@@ -52,6 +52,6 @@ function getTrackingData() {
 
 setInterval(getTrackingData, 100)
 
-console.log("openvr", openvr)
+//console.log("openvr", openvr)
 
 //console.log("event type", openvr.EVREventType[1707])
